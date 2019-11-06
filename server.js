@@ -2,15 +2,22 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-// you can pass the parameter in the command line. e.g. node static_server.js 3000
-const port = process.argv[2] || 9000;
+
+const args = process.argv;
+
+if (args.length < 3 || args.length > 4) {
+  console.log('Please provide a path and an optional port number');
+  return 1;
+}
+
+const port = args[3] || 9000;
+
 http.createServer(function (req, res) {
-  console.log(`${req.method} ${req.url}`);
   // parse URL
   const parsedUrl = url.parse(req.url);
   // extract URL path
   let pathname = `.${parsedUrl.pathname}`;
-  let fullpath = __dirname + '\\..\\..\\..\\work\\theCrunchyCorner\\website\\crunchyWebsite\\' + pathname.substring(2);
+  let fullpath = __dirname + '/' + args[2] + pathname.substring(2);
   // maps file extention to MIME types
   const mimeType = {
     '.ico': 'image/x-icon',
@@ -28,6 +35,7 @@ http.createServer(function (req, res) {
     '.eot': 'appliaction/vnd.ms-fontobject',
     '.ttf': 'aplication/font-sfnt'
   };
+
   fs.exists(fullpath, function (exist) {
     if(!exist) {
       // if the file is not found, return 404
